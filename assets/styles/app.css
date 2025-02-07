@@ -1,3 +1,8 @@
 body {
-    background-color: skyblue;
+    background-color: #FEF9E1;
 }
+
+#averageResult {
+    display: none;
+}
+
