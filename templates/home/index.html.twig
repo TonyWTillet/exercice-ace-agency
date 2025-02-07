@@ -71,7 +71,7 @@
                         </thead>
                         <tbody>
                             {% for studentAverage in averages %}
-                               {# on recupere le details des notes et on les affiche il faut convertir json en string #}
+                               {# on recupere le details des notes et on les affiche #}
                                 {% set details = studentAverage.details %}
                                 {% set notes = [] %}
                                 {% for key, value in details %}
