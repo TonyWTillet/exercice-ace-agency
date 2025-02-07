@@ -1,29 +1,38 @@
 $(document).ready(function() {
 
     // Calcul de la moyenne
-    $('#averageForm').submit(function(e) {
+    const sendButton = $('button[name="calculate"]');
+    $(sendButton).click(function(e) {
         e.preventDefault();
 
         // On vérifie si les champs sont remplis
 
         // On récupére lastname + firstname
-        var lastname = $('input[name="lastname"]').val();
-        var firstname = $('input[name="firstname"]').val();
-        if (lastname === '' || firstname === '') {
+        var lastname = $('input[name="average_form[lastname]"]').val();
+        var firstname = $('input[name="average_form[firstname]"]').val();
+        if (lastname === '' || firstname === '' ) {
             alert('Veuillez remplir tous les champs');
             return false;
         }
 
-        console.log($('input[name="lastname"]'));
-        // On récupère les notes + vérifie que ce soit bien des float
-        var notes = [];
+        // On récupère les notes + vérifie que ce soit bien des float||int
+        let notes = [];
+        let isValid = true;
         $('.note').each(function() {
-            if (isNaN($(this).val())) {
-                alert('Veuillez entrer des nombres');
-                return false;
+            let val = $(this).val();
+            if (isNaN(val) || val === '') {
+                alert('Veuillez entrer des nombres valides');
+                isValid = false;
+                return false; // Arrête seulement la boucle `each()`
             }
             notes.push($(this).val());
         });
+
+        if (!isValid || notes.length < 2) {
+            alert('Veuillez entrer des nombres valides, et au moins 2 notes');
+            return false;
+        }
+        console.log(notes, isValid);
 
         // Calcul de la moyenne
         var sum = 0;

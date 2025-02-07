@@ -3,52 +3,97 @@
 {% block title %}Calculer sa moyenne{% endblock %}
 
 {% block body %}
-<div class="container mt-5">
-    <div class="row">
-        <div class="col-12">
-            <h1 class="mb-4">Calculer sa moyenne</h1>
-        </div>
-        <form method="post" id="averageForm">
+    <div class="container mt-5">
+        <div class="row">
             <div class="col-12">
-                <div class="row">
-                    <div class="col-xl-6 mb-3">
-                        <label for="lastname" class="form-label">Nom*</label>
-                        <input type="text" name="lastname" class="form-control" id="lastname" placeholder="Smith" required>
-                    </div>
-                    <div class="col-xl-6 mb-3">
-                        <label for="firstname" class="form-label">Prénom*</label>
-                        <input type="text" name="firstname" class="form-control" id="firstname" placeholder="Jhon" required>
-                    </div>
+                <h1 class="mb-4">Calculer sa moyenne</h1>
+            </div>
+            {{ form_start(form, {'method': 'POST', 'action': path('app_home'), attr: { 'data-turbo': 'false' }}) }}
+                {{ form_errors(form) }}
+                    <div class="col-12">
+                        <div class="row">
+                            <div class="col-xl-6 mb-3">
+                                {{ form_label(form.lastname) }}
+                                {{ form_widget(form.lastname) }}
+                            </div>
+                            <div class="col-xl-6 mb-3">
+                                {{ form_row(form.firstname) }}
+                            </div>
 
-                    <div class="col-xl-6 mb-3">
-                        <label for="number1" class="form-label">Note*</label>
-                        <div class="input-group">
-                            <input type="number" name="number1" class="form-control note" step="0.5" min="0" max="20" aria-label="Note" id="number1" required>
-                            <span class="input-group-text"> / 20</span>
+                            <div class="col-xl-6 mb-3">
+                                {{ form_label(form.number1) }}
+                                <div class="input-group">
+                                    {{ form_widget(form.number1) }}
+                                    <span class="input-group-text"> / 20</span>
+                                </div>
+                            </div>
+                            <div class="col-xl-6 mb-3">
+                                {{ form_label(form.number2) }}
+                                <div class="input-group">
+                                    {{ form_widget(form.number2) }}
+                                    <span class="input-group-text"> / 20</span>
+                                </div>
+                            </div>
+                            <div class="col-12 mt-3">
+                                <button class="btn btn-outline-primary" type="submit" name="calculate">Calculer</button>
+                                <button class="btn btn-outline-success ms-2" name="save" type="submit">Calculer et enregistrer</button>
+                            </div>
                         </div>
                     </div>
-                    <div class="col-xl-6 mb-3">
-                        <label for="number2" class="form-label">Note*</label>
-                        <div class="input-group">
-                            <input type="number" name="number2" class="form-control note" step="0.5" min="0" max="20" aria-label="Note" id="number2" required>
-                            <span class="input-group-text"> / 20</span>
-                        </div>
-                    </div>
-                    <div class="col-12 mt-3">
-                        <button class="btn btn-outline-primary" type="submit">Calculer</button>
-                        <button class="btn btn-outline-success ms-2" type="submit">Calculer et enregistrer</button>
-                    </div>
+                {{ form_row(form._token) }}
+            {{ form_end(form) }}
+        </div>
+
+        <div class="row mt-5" id="averageResult">
+            <div class="col-12">
+                <h2>Résultat</h2>
+            </div>
+            <div class="col-12">
+                <p>La moyenne de <span id="student"></span> est de <span id="average"></span> / 20</p>
+            </div>
+        </div>
+    </div>
+
+    {% if averages %}
+        <div class="container mt-5">
+            <div class="row">
+                <div class="col-12 mb-3">
+                    <h2>Historique</h2>
+                </div>
+                <div class="col-12">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Nom prénom</th>
+                                <th>Détails des notes</th>
+                                <th>Moyenne</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for studentAverage in averages %}
+                               {# on recupere le details des notes et on les affiche il faut convertir json en string #}
+                                {% set details = studentAverage.details %}
+                                {% set notes = [] %}
+                                {% for key, value in details %}
+                                    {% set notes = notes|merge([value]) %}
+                                {% endfor %}
+                                {% set notes = notes|join(', ') %}
+
+                                {% if studentAverage.average >= 10 %}
+                                    <tr class="table-success">
+                                {% else %}
+                                    <tr class="table-danger">
+                                {% endif %}
+                                    <td>{{ studentAverage.fullName }}</td>
+                                    <td> {{ notes }}</td>
+                                    <td>{{ studentAverage.average }} / 20</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
                 </div>
             </div>
-        </form>
-    </div>
-
-    <div class="row mt-5" id="averageResult">
-        <div class="col-12">
-            <h2>Résultat</h2>
         </div>
-        <div class="col-12">
-            <p>La moyenne de <span id="student"></span> est de <span id="average"></span> / 20</p>
-    </div>
-</div>
+    {% endif %}
+
 {% endblock %}
